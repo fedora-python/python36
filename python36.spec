@@ -389,6 +389,9 @@ URL: https://www.python.org/
 %global __requires_exclude ^python\\(abi\\) = 3\\..$
 %global __provides_exclude ^python\\(abi\\) = 3\\..$
 
+# We keep those inside on purpose
+Provides: bundled(python3-pip) = 9.0.1
+Provides: bundled(python3-setuptools) = 28.8.0
 
 %description
 Python %{pybasever} package for developers.
