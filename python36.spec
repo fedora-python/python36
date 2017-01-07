@@ -99,7 +99,7 @@
 Summary: Version %{pybasever} of the Python programming language aka Python 3000
 Name: python%{pyshortver}
 Version: %{pybasever}.0
-Release: 1%{?dist}
+Release: 2%{?dist}
 License: Python
 Group: Development/Languages
 
@@ -363,6 +363,12 @@ Patch243: 00243-fix-mips64-triplet.patch
 # Not yet fixed upstream: http://bugs.python.org/issue28787
 Patch249: 00249-fix-out-of-tree-dtrace-builds.patch
 
+# 00250 #
+# After  glibc-2.24.90, Python 3 failed to start on EL7 kernel
+# rhbz#1410175: https://bugzilla.redhat.com/show_bug.cgi?id=1410175
+# http://bugs.python.org/issue29157
+Patch250: 00250-getentropy.patch
+
 # (New patches go here ^^^)
 #
 # When adding new patches to "python" and "python3" in Fedora, EL, etc.,
@@ -467,6 +473,7 @@ rm -r Modules/zlib || exit 1
 %patch206 -p1
 %patch243 -p1
 %patch249 -p1
+%patch250 -p1
 
 # Currently (2010-01-15), http://docs.python.org/library is for 2.6, and there
 # are many differences between 2.6 and the Python 3 library.
@@ -1002,5 +1009,8 @@ CheckPython optimized
 # ======================================================
 
 %changelog
+* Thu Jan 05 2017 Miro Hrončok <mhroncok@redhat.com> - 3.6.0-2
+- Don't blow up on EL7 kernel (random generator) (rhbz#1410175)
+
 * Sun Jan 01 2017 Miro Hrončok <mhroncok@redhat.com> - 3.6.0-1
 - Imported from F26
