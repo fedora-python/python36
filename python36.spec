@@ -2,7 +2,7 @@
 # Top-level metadata
 # ==================
 
-Name: python3
+Name: python36
 Summary: Interpreter of the Python programming language
 URL: https://www.python.org/
 
@@ -11,8 +11,6 @@ URL: https://www.python.org/
 # pybasever without the dot:
 %global pyshortver 36
 
-#  WARNING  When rebasing to a new Python version,
-#           remember to update the python3-docs package as well
 Version: %{pybasever}.3
 Release: 4%{?dist}
 License: Python
