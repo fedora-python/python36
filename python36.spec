@@ -376,13 +376,6 @@ Provides: python%{pyshortver} = %{version}-%{release}
 # replace python36-3.6.2.
 Obsoletes: python%{pyshortver}
 
-# Shall be removed in Fedora 31
-# The release is bumped to 20, so we can do f27 platform-python updates
-# If the release in f27 ever goes >= 20, raise it here
-# If platform-python is ever reintroduced, make it higher version than this:
-%global platpyver 3.6.2-20
-Obsoletes: platform-python < %{platpyver}
-
 # The description used both for the SRPM and the main `python3` subpackage:
 %description
 Python is an accessible, high-level, dynamically typed, interpreted programming
@@ -416,10 +409,6 @@ Obsoletes: python3-enum34 < 1.0.4-5%{?dist}
 # See https://bugzilla.redhat.com/show_bug.cgi?id=1410644
 Requires: glibc%{?_isa} >= 2.24.90-26
 
-# Shall be removed in Fedora 31
-Obsoletes: platform-python-libs < %{platpyver}
-Obsoletes: platform-python-libs-devel < %{platpyver}
-
 %description libs
 This package contains runtime libraries for use by Python:
 - the majority of the Python standard library
@@ -443,9 +432,6 @@ Requires: python3-rpm-generators
 Requires: redhat-rpm-config
 
 Conflicts: %{name} < %{version}-%{release}
-
-# Shall be removed in Fedora 31
-Obsoletes: platform-python-devel < %{platpyver}
 
 %description devel
 This package contains the header files and configuration needed to compile
@@ -471,9 +457,6 @@ Provides: idle3 = %{version}-%{release}
 Conflicts: python2-tools < 2.7.13-17
 Conflicts: python-tools < 2.7.13-17
 
-# Shall be removed in Fedora 31
-Obsoletes: platform-python-tools < %{platpyver}
-
 %description tools
 This package contains several tools included with Python, including:
 - 2to3, an automatic source converter from Python 2.X
@@ -484,9 +467,6 @@ This package contains several tools included with Python, including:
 Summary: A GUI toolkit for Python
 Requires: %{name} = %{version}-%{release}
 
-# Shall be removed in Fedora 31
-Obsoletes: platform-python-tkinter < %{platpyver}
-
 %description tkinter
 The Tkinter (Tk interface) library is a graphical user interface toolkit for
 the Python programming language.
@@ -496,9 +476,6 @@ the Python programming language.
 Summary: The self-test suite for the main python3 package
 Requires: %{name} = %{version}-%{release}
 Requires: %{name}-tools = %{version}-%{release}
-
-# Shall be removed in Fedora 31
-Obsoletes: platform-python-test < %{platpyver}
 
 %description test
 The self-test suite for the Python interpreter.
