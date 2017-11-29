@@ -37,9 +37,6 @@ License: Python
 # Run the test suite in %%check
 %bcond_without tests
 
-# Ability to reuse RPM-installed pip using rewheel
-%bcond_without rewheel
-
 # Extra build for debugging the interpreter or C-API extensions
 # (the -debug subpackages)
 %bcond_without debug_build
@@ -215,12 +212,6 @@ BuildRequires: /usr/bin/dtrace
 # workaround http://bugs.python.org/issue19804 (test_uuid requires ifconfig)
 BuildRequires: /usr/sbin/ifconfig
 
-%if %{with rewheel}
-BuildRequires: python3-setuptools
-BuildRequires: python3-pip
-%endif
-
-
 # =======================
 # Source code and patches
 # =======================
@@ -336,12 +327,6 @@ Patch170: 00170-gc-assertions.patch
 # Does not affect python2 AFAICS (different sysconfig values initialization)
 Patch178: 00178-dont-duplicate-flags-in-sysconfig.patch
 
-# 00189 #
-# Add the rewheel module, allowing to recreate wheels from already installed
-# ones
-# https://github.com/bkabrda/rewheel
-Patch189: 00189-add-rewheel-module.patch
-
 # 00205 #
 # LIBPL variable in makefile takes LIBPL from configure.ac
 # but the LIBPL variable defined there doesn't respect libdir macro
@@ -408,6 +393,10 @@ Patch279: 00279-fix-memory-corruption-due-to-allocator-mix.patch
 # depend on python(abi). Provide that here.
 Provides: python(abi) = %{pybasever}
 
+# We keep those inside on purpose
+Provides: bundled(python3-pip) = 9.0.1
+Provides: bundled(python3-setuptools) = 28.8.0
+
 # For backward compatibility only, remove in F29:
 Provides: system-python(abi) = %{pybasever}
 Provides: system-python = %{version}-%{release}
@@ -434,11 +423,6 @@ Obsoletes: python%{pyshortver}
 # If platform-python is ever reintroduced, make it higher version than this:
 %global platpyver 3.6.2-20
 Obsoletes: platform-python < %{platpyver}
-
-%if %{with rewheel}
-Requires: python3-setuptools
-Requires: python3-pip
-%endif
 
 # The description used both for the SRPM and the main `python3` subpackage:
 %description
@@ -621,11 +605,6 @@ cp -a %{SOURCE7} .
 rm -r Modules/expat
 rm -r Modules/zlib
 
-%if %{with rewheel}
-%global pip_version 9.0.1
-sed -r -i s/'_PIP_VERSION = "[0-9.]+"'/'_PIP_VERSION = "%{pip_version}"'/ Lib/ensurepip/__init__.py
-%endif
-
 #
 # Apply patches:
 #
@@ -645,11 +624,6 @@ sed -r -i s/'_PIP_VERSION = "[0-9.]+"'/'_PIP_VERSION = "%{pip_version}"'/ Lib/en
 %patch163 -p1
 %patch170 -p1
 %patch178 -p1
-
-%if %{with rewheel}
-%patch189 -p1
-%endif
-
 %patch205 -p1
 %patch251 -p1
 %patch262 -p1
@@ -1171,13 +1145,6 @@ fi
 %{pylibdir}/ensurepip/*.py
 %{pylibdir}/ensurepip/__pycache__/*%{bytecode_suffixes}
 %exclude %{pylibdir}/ensurepip/_bundled
-
-%if %{with rewheel}
-%dir %{pylibdir}/ensurepip/rewheel/
-%dir %{pylibdir}/ensurepip/rewheel/__pycache__/
-%{pylibdir}/ensurepip/rewheel/*.py
-%{pylibdir}/ensurepip/rewheel/__pycache__/*%{bytecode_suffixes}
-%endif
 
 %{pylibdir}/idlelib
 
