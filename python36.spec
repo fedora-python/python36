@@ -208,7 +208,7 @@ BuildRequires: zlib-devel
 BuildRequires: /usr/bin/dtrace
 
 # workaround http://bugs.python.org/issue19804 (test_uuid requires ifconfig)
-BuildRequires: /usr/sbin/ifconfig
+BuildRequires: net-tools
 
 # =======================
 # Source code and patches
