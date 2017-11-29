@@ -217,10 +217,6 @@ Source3: macros.pybytecompile%{pybasever}
 # Written by bkabrda
 Source8: check-pyc-and-pyo-timestamps.py
 
-# Backward compatible no-op macro for system-python
-# Remove in Fedora 29
-Source9: macros.systempython
-
 # Desktop menu entry for idle3
 Source10: idle3.desktop
 
@@ -366,12 +362,6 @@ Provides: python(abi) = %{pybasever}
 Provides: bundled(python3-pip) = 9.0.1
 Provides: bundled(python3-setuptools) = 28.8.0
 
-# For backward compatibility only, remove in F29:
-Provides: system-python(abi) = %{pybasever}
-Provides: system-python = %{version}-%{release}
-Provides: system-python%{?_isa} = %{version}-%{release}
-Obsoletes: system-python < %{version}-%{release}
-
 Requires: %{name}-libs%{?_isa} = %{version}-%{release}
 
 # In order to support multiple Python interpreters for development purposes,
@@ -425,11 +415,6 @@ Obsoletes: python3-enum34 < 1.0.4-5%{?dist}
 # Python 3 built with glibc >= 2.24.90-26 needs to require it
 # See https://bugzilla.redhat.com/show_bug.cgi?id=1410644
 Requires: glibc%{?_isa} >= 2.24.90-26
-
-# For backward compatibility only, remove in F29:
-Provides: system-python-libs = %{version}-%{release}
-Provides: system-python-libs%{?_isa} = %{version}-%{release}
-Obsoletes: system-python-libs < %{version}-%{release}
 
 # Shall be removed in Fedora 31
 Obsoletes: platform-python-libs < %{platpyver}
@@ -911,7 +896,6 @@ find %{buildroot} -perm 555 -exec chmod 755 {} \;
 # Install macros for rpm:
 mkdir -p %{buildroot}/%{_rpmconfigdir}/macros.d/
 install -m 644 %{SOURCE3} %{buildroot}/%{_rpmconfigdir}/macros.d/
-install -m 644 %{SOURCE9} %{buildroot}/%{_rpmconfigdir}/macros.d/
 
 # Create "/usr/bin/python3-debug", a symlink to the python3 debug binary, to
 # avoid the user having to know the precise version and ABI flags.
@@ -921,12 +905,6 @@ ln -s \
   %{_bindir}/python%{LDVERSION_debug} \
   %{buildroot}%{_bindir}/python3-debug
 %endif
-
-# System Python: Link the executable to libexec
-# This is for backwards compatibility only and should be removed in Fedora 29
-mkdir -p %{buildroot}%{_libexecdir}
-ln -s %{_bindir}/python%{pybasever} %{buildroot}%{_libexecdir}/system-python
-
 
 # ======================================================
 # Checks for packaging issues
@@ -1052,8 +1030,6 @@ fi
 %{_bindir}/pyvenv
 %{_bindir}/pyvenv-%{pybasever}
 %{_mandir}/*/*
-# Remove in Fedora 29:
-%{_libexecdir}/system-python
 
 %files libs
 %defattr(-,root,root,-)
@@ -1285,7 +1261,6 @@ fi
 %{_libdir}/pkgconfig/python-%{pybasever}.pc
 %{_libdir}/pkgconfig/python3.pc
 %{_rpmconfigdir}/macros.d/macros.pybytecompile%{pybasever}
-%{_rpmconfigdir}/macros.d/macros.systempython
 
 %files tools
 %defattr(-,root,root,755)
