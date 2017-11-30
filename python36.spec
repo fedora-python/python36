@@ -379,18 +379,6 @@ Provides: bundled(python3-setuptools) = 28.8.0
 
 Requires: %{name}-libs%{?_isa} = %{version}-%{release}
 
-# In order to support multiple Python interpreters for development purposes,
-# packages with with the naming scheme pythonXY (e.g. python35) exist for
-# non-default versions of Python 3.
-# For consistency, and to keep the upgrade path clean, we Provide/Obsolete
-# these names here.
-Provides: python%{pyshortver} = %{version}-%{release}
-# Note that using Obsoletes without package version is not standard practice.
-# Here we assert that *any* version of the system's default interpreter is
-# preferable to an "extra" interpreter. For example, python3-3.6.1 will
-# replace python36-3.6.2.
-Obsoletes: python%{pyshortver}
-
 # The description used both for the SRPM and the main `python3` subpackage:
 %description
 Python is an accessible, high-level, dynamically typed, interpreted programming
@@ -414,11 +402,6 @@ the "%{name}-" prefix.
 
 %package libs
 Summary:        Python runtime libraries
-
-# The "enum" module is included in the standard library.
-# Provide an upgrade path from the external library.
-Provides: python3-enum34 = 1.0.4-5%{?dist}
-Obsoletes: python3-enum34 < 1.0.4-5%{?dist}
 
 # Python 3 built with glibc >= 2.24.90-26 needs to require it
 # See https://bugzilla.redhat.com/show_bug.cgi?id=1410644
@@ -463,8 +446,6 @@ Requires: %{name}-tkinter = %{version}-%{release}
 
 Provides: %{name}-2to3 = %{version}-%{release}
 Provides: %{name}-idle = %{version}-%{release}
-Provides: 2to3 = %{version}-%{release}
-Provides: idle3 = %{version}-%{release}
 
 # https://bugzilla.redhat.com/show_bug.cgi?id=1111275
 # /usr/bin/2to3 was moved from here
