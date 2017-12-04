@@ -403,9 +403,6 @@ the "%{name}-" prefix.
 %package libs
 Summary:        Python runtime libraries
 
-# Python 3 built with glibc >= 2.24.90-26 needs to require it
-# See https://bugzilla.redhat.com/show_bug.cgi?id=1410644
-Requires: glibc%{?_isa} >= 2.24.90-26
 
 %description libs
 This package contains runtime libraries for use by Python:
