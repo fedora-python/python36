@@ -11,6 +11,13 @@ URL: https://www.python.org/
 # pybasever without the dot:
 %global pyshortver 36
 
+# is this the EPEL 7 main Python 3?
+%if "%python3_pkgversion" == "%pyshortver"
+%global main_python3 1
+%else
+%global main_python3 0
+%endif
+
 Version: %{pybasever}.3
 Release: 4%{?dist}
 License: Python
@@ -708,7 +715,11 @@ InstallPython() {
     DESTDIR=%{buildroot} \
     INSTALL="install -p" \
     EXTRA_CFLAGS="$MoreCFlags" \
+%if 0%{?main_python3}
     install
+%else
+	altinstall
+%endif
 
   popd
 
@@ -725,6 +736,24 @@ InstallPython() {
   echo '[ $? -eq 127 ] && echo "Could not find python'${LDVersion}'-`uname -m`-config. Look around to see available arches." >&2' >> \
     %{buildroot}%{_bindir}/python${LDVersion}-config
     chmod +x %{buildroot}%{_bindir}/python${LDVersion}-config
+
+%if ! 0%{?main_python3}
+# make altinstall doesn't create python3.X-config, but we want it
+#  (we don't want to have just python3.Xm-config, that's a bit confusing)
+ln -s \
+  %{_bindir}/python%{LDVERSION_optimized}-config \
+  %{buildroot}%{_bindir}/python%{pybasever}-config
+# make altinstall doesn't create python-3.6m.pc, only python-3.6.pc, but we want both
+ln -s \
+  %{_libdir}/pkgconfig/python-%{pybasever}.pc \
+  %{buildroot}%{_libdir}/pkgconfig/python-%{LDVERSION_optimized}.pc
+%endif
+
+# remove libpython3.so in EPEL non-main python to not cause collision
+# between python3X and python3X+1(or+2) stacks...
+%if ! 0%{?main_python3}
+rm -f %{buildroot}%{_libdir}/libpython3.so
+%endif
 
   # Make python3-devel multilib-ready
   mv %{buildroot}%{_includedir}/python${LDVersion}/pyconfig.h \
@@ -752,6 +781,15 @@ InstallPython debug \
   -O0 \
   %{LDVERSION_debug} \
   -debug
+
+%if ! 0%{?main_python3}
+# altinstall only creates pkgconfig/python-3.6.pc, not the version with ABIFAGS,
+#  so we need to move the debug .pc file to not overwrite it by optimized install
+mv \
+  %{buildroot}%{_libdir}/pkgconfig/python-%{pybasever}.pc \
+  %{buildroot}%{_libdir}/pkgconfig/python-%{LDVERSION_debug}.pc
+%endif
+
 %endif # with debug_build
 
 # Now the optimized build:
@@ -782,6 +820,10 @@ desktop-file-install --dir=%{buildroot}%{_datadir}/applications %{SOURCE10}
 mkdir -p %{buildroot}%{_datadir}/appdata
 cp -a %{SOURCE11} %{buildroot}%{_datadir}/appdata
 appstream-util validate-relax --nonet %{buildroot}%{_datadir}/appdata/idle3.appdata.xml
+
+%if 0%{main_python3}
+mv %{buildroot}%{_bindir}/2to3 %{buildroot}%{_bindir}/2to3-3
+%endif
 
 # Development tools
 install -m755 -d %{buildroot}%{pylibdir}/Tools
@@ -873,7 +915,13 @@ install -m 644 %{SOURCE3} %{buildroot}/%{_rpmconfigdir}/macros.d/
 %if %{with debug_build}
 ln -s \
   %{_bindir}/python%{LDVERSION_debug} \
+  %{buildroot}%{_bindir}/python%{pybasever}-debug
+
+%if 0%{main_python3}
+ln -s \
+  %{_bindir}/python%{pybasever}-debug \
   %{buildroot}%{_bindir}/python3-debug
+%endif
 %endif
 
 # ======================================================
@@ -994,10 +1042,14 @@ fi
 %license LICENSE
 %doc README.rst
 %{_bindir}/pydoc*
+%if 0%{?main_python3}
 %{_bindir}/python3
+%endif
 %{_bindir}/python%{pybasever}
 %{_bindir}/python%{pybasever}m
+%if 0%{?main_python3}
 %{_bindir}/pyvenv
+%endif
 %{_bindir}/pyvenv-%{pybasever}
 %{_mandir}/*/*
 
@@ -1210,7 +1262,10 @@ fi
 %{_includedir}/python%{LDVERSION_optimized}/%{_pyconfig_h}
 
 %{_libdir}/%{py_INSTSONAME_optimized}
+# removed in EPEL, see explanation in install section
+%if 0%{?main_python3}
 %{_libdir}/libpython3.so
+%endif
 
 %files devel
 %defattr(-,root,root)
@@ -1220,7 +1275,9 @@ fi
 %{_includedir}/python%{LDVERSION_optimized}/*.h
 %exclude %{_includedir}/python%{LDVERSION_optimized}/%{_pyconfig_h}
 %doc Misc/README.valgrind Misc/valgrind-python.supp Misc/gdbinit
+%if 0%{?main_python3}
 %{_bindir}/python3-config
+%endif
 %{_bindir}/python%{pybasever}-config
 %{_bindir}/python%{LDVERSION_optimized}-config
 %{_bindir}/python%{LDVERSION_optimized}-*-config
@@ -1228,13 +1285,16 @@ fi
 %{_libdir}/libpython%{LDVERSION_optimized}.so
 %{_libdir}/pkgconfig/python-%{LDVERSION_optimized}.pc
 %{_libdir}/pkgconfig/python-%{pybasever}.pc
+%if 0%{?main_python3}
 %{_libdir}/pkgconfig/python3.pc
+%endif
 %{_rpmconfigdir}/macros.d/macros.pybytecompile%{pybasever}
 
 %files tools
 %defattr(-,root,root,755)
-%{_bindir}/2to3
-# TODO: Remove 2to3-3.7 once rebased to 3.7
+%if 0%{?main_python3}
+%{_bindir}/2to3-3
+%endif
 %{_bindir}/2to3-%{pybasever}
 %{_bindir}/idle*
 %{pylibdir}/Tools
@@ -1283,7 +1343,10 @@ fi
 
 # Analog of the core subpackage's files:
 %{_bindir}/python%{LDVERSION_debug}
+%if 0%{?main_python3}
 %{_bindir}/python3-debug
+%endif
+%{_bindir}/python%{pybasever}-debug
 
 # Analog of the -libs subpackage's files:
 # ...with debug builds of the built-in "extension" modules:
