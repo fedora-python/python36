@@ -19,7 +19,7 @@ URL: https://www.python.org/
 %endif
 
 Version: %{pybasever}.3
-Release: 4%{?dist}
+Release: 5%{?dist}
 License: Python
 
 
@@ -1464,6 +1464,9 @@ fi
 # ======================================================
 
 %changelog
+* Tue Dec 19 2017 Charalampos Stratakis <cstratak@redhat.com> - 3.6.3-5
+- Build the python36 package for EPEL.
+
 * Tue Nov 21 2017 Miro Hrončok <mhroncok@redhat.com> - 3.6.3-4
 - Raise the release of platform-python obsoletes for better maintainability
 
