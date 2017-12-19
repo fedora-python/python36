@@ -916,6 +916,11 @@ ln -s \
 rm -f %{buildroot}%{_libdir}/libpython3.so
 %endif
 
+# Provide the python36 binary symlink.
+ln -s \
+    %{_bindir}/python%{pybasever} \
+    %{buildroot}%{_bindir}/python%{pyshortver}
+
 # ======================================================
 # Checks for packaging issues
 # ======================================================
@@ -1037,6 +1042,7 @@ fi
 %if 0%{?main_python3}
 %{_bindir}/python3
 %endif
+%{_bindir}/python%{pyshortver}
 %{_bindir}/python%{pybasever}
 %{_bindir}/python%{pybasever}m
 %if 0%{?main_python3}
