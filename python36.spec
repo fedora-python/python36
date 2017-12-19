@@ -184,7 +184,9 @@ BuildRequires: autoconf
 BuildRequires: bluez-libs-devel
 BuildRequires: bzip2
 BuildRequires: bzip2-devel
+%if 0%{?main_python3}
 BuildRequires: desktop-file-utils
+%endif
 BuildRequires: expat-devel
 
 BuildRequires: findutils
@@ -194,7 +196,9 @@ BuildRequires: gdbm-devel
 %endif
 BuildRequires: glibc-devel
 BuildRequires: gmp-devel
+%if 0%{?main_python3}
 BuildRequires: libappstream-glib
+%endif
 BuildRequires: libffi-devel
 BuildRequires: libGL-devel
 BuildRequires: libX11-devel
@@ -784,7 +788,8 @@ install -d -m 0755 %{buildroot}%{pylibdir}/site-packages/__pycache__
 install -d -m 0755 %{buildroot}%{_prefix}/lib/python%{pybasever}/site-packages/__pycache__
 %endif
 
-# add idle3 to menu
+%if 0%{main_python3}
+# add idle3 to menu if that is the main python3 in EPEL
 install -D -m 0644 Lib/idlelib/Icons/idle_16.png %{buildroot}%{_datadir}/icons/hicolor/16x16/apps/idle3.png
 install -D -m 0644 Lib/idlelib/Icons/idle_32.png %{buildroot}%{_datadir}/icons/hicolor/32x32/apps/idle3.png
 install -D -m 0644 Lib/idlelib/Icons/idle_48.png %{buildroot}%{_datadir}/icons/hicolor/48x48/apps/idle3.png
@@ -794,6 +799,7 @@ desktop-file-install --dir=%{buildroot}%{_datadir}/applications %{SOURCE10}
 mkdir -p %{buildroot}%{_datadir}/appdata
 cp -a %{SOURCE11} %{buildroot}%{_datadir}/appdata
 appstream-util validate-relax --nonet %{buildroot}%{_datadir}/appdata/idle3.appdata.xml
+%endif
 
 %if 0%{main_python3}
 mv %{buildroot}%{_bindir}/2to3 %{buildroot}%{_bindir}/2to3-3
@@ -1297,9 +1303,11 @@ fi
 %{_bindir}/idle*
 %{pylibdir}/Tools
 %doc %{pylibdir}/Doc
+%if 0%{?main_python3}
 %{_datadir}/appdata/idle3.appdata.xml
 %{_datadir}/applications/idle3.desktop
 %{_datadir}/icons/hicolor/*/apps/idle3.*
+%endif
 
 %files tkinter
 %defattr(-,root,root,755)
