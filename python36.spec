@@ -735,24 +735,6 @@ InstallPython() {
     %{buildroot}%{_bindir}/python${LDVersion}-config
     chmod +x %{buildroot}%{_bindir}/python${LDVersion}-config
 
-%if ! 0%{?main_python3}
-# make altinstall doesn't create python3.X-config, but we want it
-#  (we don't want to have just python3.Xm-config, that's a bit confusing)
-ln -s \
-  %{_bindir}/python%{LDVERSION_optimized}-config \
-  %{buildroot}%{_bindir}/python%{pybasever}-config
-# make altinstall doesn't create python-3.6m.pc, only python-3.6.pc, but we want both
-ln -s \
-  %{_libdir}/pkgconfig/python-%{pybasever}.pc \
-  %{buildroot}%{_libdir}/pkgconfig/python-%{LDVERSION_optimized}.pc
-%endif
-
-# remove libpython3.so in EPEL non-main python to not cause collision
-# between python3X and python3X+1(or+2) stacks...
-%if ! 0%{?main_python3}
-rm -f %{buildroot}%{_libdir}/libpython3.so
-%endif
-
   # Make python3-devel multilib-ready
   mv %{buildroot}%{_includedir}/python${LDVersion}/pyconfig.h \
      %{buildroot}%{_includedir}/python${LDVersion}/%{_pyconfig_h}
@@ -920,6 +902,24 @@ ln -s \
   %{_bindir}/python%{pybasever}-debug \
   %{buildroot}%{_bindir}/python3-debug
 %endif
+%endif
+
+%if ! 0%{?main_python3}
+# make altinstall doesn't create python3.X-config, but we want it
+#  (we don't want to have just python3.Xm-config, that's a bit confusing)
+ln -s \
+  %{_bindir}/python%{LDVERSION_optimized}-config \
+  %{buildroot}%{_bindir}/python%{pybasever}-config
+# make altinstall doesn't create python-3.6m.pc, only python-3.6.pc, but we want both
+ln -s \
+  %{_libdir}/pkgconfig/python-%{pybasever}.pc \
+  %{buildroot}%{_libdir}/pkgconfig/python-%{LDVERSION_optimized}.pc
+%endif
+
+# remove libpython3.so in EPEL non-main python to not cause collision
+# between python3X and python3X+1(or+2) stacks...
+%if ! 0%{?main_python3}
+rm -f %{buildroot}%{_libdir}/libpython3.so
 %endif
 
 # ======================================================
